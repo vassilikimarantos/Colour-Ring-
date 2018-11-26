@@ -1,0 +1,150 @@
+/*  Uzizwe Colour-Ring demo sketch
+ *   
+ * Any help you offer will be much appricated. 
+ * The dream is to get these working really effectlivly and get them to underprivileged kids.  
+ * Thank you.
+ * 
+ * Allows a visually impaired person to understand if an object is red,green or blue in colour. 
+ * The vibrations will vary with pulse once if red, twice if green and three times if blue.
+ * 
+ * 
+ * This sketch was adapted from both the original that comes with the 
+ * Adafruit library and form Arduino Step by Step by Peter Dalmaris.
+ * Thank you Peter 
+ * 
+ * 
+  * Components
+ * ----------
+ *  - Nerdonic Exen Mini or equivelant, Arduino Mini, Adafruit Trinket 
+ *  - Adafruit RGB TCS34725 sensor breakout or equivelant
+ *  - Vibration Motor 10x2mm 3V
+ *  - One 2  KOhm resistors
+ *  - One BS170 MOSFET
+ *  
+ *  Libraries
+ *  ---------
+ *  - Wire
+ *  - Adafruit_TCS34725
+ *
+ * Connections
+ * -----------
+ *  Break out    |    Exen Mini
+ *  -----------------------------
+ *      VIN      |      3.3v
+ *      GND      |      GND
+ *      SCL      |      SCL or A5
+ *      SDA      |      SDA or A4
+ *      LED      |      8 (or set to GND to turn off)
+ *      INT      |      2 (but not used in this sketch)
+ *   
+ *   
+ *  Assembly
+ *  --------
+ * The Exen Mini is not able to direcly power the 3V Vibration Motor. 
+ * So we used a BS170 MOSFET connected to the batter and the 3V Vibration Motor. Controled by the Pin 0 on the Exen Mini.
+ * The vibratory motor is a Small DC motor with a eccentric rotating mass (ERM).  
+ * We would be better off using a A linear resonant actuator (LRA) but they need an additional motor driver. 
+ *  
+ *  Links
+ *  -----------------
+ *  Check out any course by Peter Dalmaris at https://www.udemy.com/user/peterdalmaris/
+ *  For information on RGB color: https://en.wikipedia.org/wiki/RGB_color_model
+ *  For information on color temperature: https://en.wikipedia.org/wiki/Color_temperature
+ *  For more information on the breakout see https://www.adafruit.com/product/1334
+ *  The repository for the library used is at https://github.com/adafruit/Adafruit_TCS34725
+ *  For the Exen Mini https://www.nerdonic.com/
+ *  For more information about Vibratory Motors look at https://www.precisionmicrodrives.com/vibration-motors/
+ *  You can find us at www.uzizwe.com 
+ * 
+ */
+
+#include <Wire.h>
+#include "Adafruit_TCS34725.h" 
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_1X);  
+
+
+
+void setup() {
+  SerialUSB.begin(115200);
+  
+  if (tcs.begin()){
+    SerialUSB.println("Found Adafruit_TCS34725");
+  }else {
+    SerialUSB.println("No Adafruit_TCS34725 Found ... check connections");
+    while (1); // this completely stops the program
+  }
+
+  pinMode(8, OUTPUT); //LED
+  pinMode(A1, OUTPUT); //MOTOR
+  pinMode(A2, OUTPUT); // switch colour sensor LED on 
+  
+  analogWrite(8, 0);
+  analogWrite(A1, 0);
+  digitalWrite(A2, HIGH);
+  
+}
+
+void loop() {
+   uint16_t r, g, b, c;
+   tcs.getRawData(&r, &g, &b, &c);
+   
+  SerialUSB.print("C:\t"); SerialUSB.print(c);
+  SerialUSB.print("\tR:\t"); SerialUSB.print(r);
+  SerialUSB.print("\tG:\t"); SerialUSB.print(g);
+  SerialUSB.print("\tB:\t"); SerialUSB.println(b);
+  
+  if((r>g) && (r>b)){
+     SerialUSB.println("red");
+     redVibration();
+  }
+  
+  if((g>r) && (g>b)){
+     SerialUSB.println("green");
+     greenVibration();
+  }
+  
+  if((b>r) && (b>g)){
+     SerialUSB.println("blue");
+     blueVibration();
+  }
+  
+  delay(2000);
+}
+
+
+void redVibration(){
+  on();
+  off();
+}
+
+
+void greenVibration(){
+  on();
+  off();
+  on();
+  off();
+}
+
+
+void blueVibration(){
+  on();
+  off();
+  on();
+  off();
+  on();
+  off();
+}
+
+void on (){
+  int rpm = 255;
+  analogWrite(A1,rpm);
+  analogWrite(8, rpm);
+  delay (120);
+}
+
+void off(){
+  int rpm = 0;
+  analogWrite(A1,rpm);
+  analogWrite(8, rpm);
+  delay (120);
+}
