@@ -1,7 +1,7 @@
 # Colour-Ring-
 
 Hi.
-Any help is really appricated.
+Any help is really appreciated.
 
 The Colour-Ring allows a visually impaired person to gauge the colour of an item. With the use of a colour sensor.
 The sensor will map the value of Red, Green and Blue and translate them to a small vibration motor.
