@@ -76,11 +76,11 @@ void setup() {
 
   pinMode(8, OUTPUT); //LED
   pinMode(A1, OUTPUT); //MOTOR
-  pinMode(A2, OUTPUT); // switch colour sensor LED on 
+  pinMode(1, OUTPUT); // switch colour sensor LED on 
   
   analogWrite(8, 0);
   analogWrite(A1, 0);
-  digitalWrite(A2, HIGH);
+  digitalWrite(1, HIGH);
   
 }
 
